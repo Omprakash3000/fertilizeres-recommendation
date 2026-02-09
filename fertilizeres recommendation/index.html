@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FERTISENSE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .range-info {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-reset:hover {
+            background: #e8e8e8;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .fertilizer-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #667eea;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .confidence {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .confidence-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .probabilities {
+            margin-top: 20px;
+        }
+
+        .prob-title {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .prob-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .prob-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .prob-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            border-left: 4px solid #c33;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 Fertilizer Recommendation System</h1>
+        <p class="subtitle">Get personalized fertilizer recommendations based on your soil and crop conditions</p>
+
+        <form id="fertilizerForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="n">Nitrogen (N) %</label>
+                    <input type="number" id="n" name="n" min="0" max="100" step="0.1" required>
+                    <span class="range-info">Range: 0-100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="p">Phosphorus (P) %</label>
+                    <input type="number" id="p" name="p" min="0" max="100" step="0.1" required>
+                    <span class="range-info">Range: 0-100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="k">Potassium (K) %</label>
+                    <input type="number" id="k" name="k" min="0" max="100" step="0.1" required>
+                    <span class="range-info">Range: 0-100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="temperature">Temperature (°C)</label>
+                    <input type="number" id="temperature" name="temperature" min="-50" max="50" step="0.1" required>
+                    <span class="range-info">Range: -50 to 50</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="humidity">Humidity (%)</label>
+                    <input type="number" id="humidity" name="humidity" min="0" max="100" step="0.1" required>
+                    <span class="range-info">Range: 0-100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="moisture">Soil Moisture (%)</label>
+                    <input type="number" id="moisture" name="moisture" min="0" max="100" step="0.1" required>
+                    <span class="range-info">Range: 0-100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="soil_type">Soil Type</label>
+                    <select id="soil_type" name="soil_type" required>
+                        <option value="">Select soil type...</option>
+                        <option value="Sandy">Sandy</option>
+                        <option value="Loamy">Loamy</option>
+                        <option value="Clayey">Clayey</option>
+                        <option value="Black">Black</option>
+                        <option value="Red">Red</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="crop_type">Crop Type</label>
+                    <select id="crop_type" name="crop_type" required>
+                        <option value="">Select crop type...</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Sugarcane">Sugarcane</option>
+                        <option value="Cotton">Cotton</option>
+                        <option value="Soyabean">Soyabean</option>
+                        <option value="Mungbean">Mungbean</option>
+                        <option value="Tea">Tea</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Coconut">Coconut</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn-predict">Get Recommendation</button>
+                <button type="button" class="btn-reset" onclick="resetForm()">Reset</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Analyzing your data...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result-container" id="result">
+            <h2 class="result-title">Recommended Fertilizer</h2>
+            <div class="fertilizer-name" id="fertilizerName"></div>
+            <div class="confidence">
+                Confidence: <span class="confidence-value" id="confidence"></span>
+            </div>
+            <div class="probabilities">
+                <div class="prob-title">Prediction Probabilities:</div>
+                <div id="probabilitiesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect API URL (works for both local and Vercel deployment)
+        const API_BASE_URL = window.location.origin;
+
+        // Load crop types and soil types from API
+        async function loadOptions() {
+            try {
+                const [cropRes, soilRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/crop-types`),
+                    fetch(`${API_BASE_URL}/api/soil-types`)
+                ]);
+                
+                const cropData = await cropRes.json();
+                const soilData = await soilRes.json();
+                
+            } catch (error) {
+                console.error('Error loading options:', error);
+            }
+        }
+
+        document.getElementById('fertilizerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                n: parseFloat(document.getElementById('n').value),
+                p: parseFloat(document.getElementById('p').value),
+                k: parseFloat(document.getElementById('k').value),
+                temperature: parseFloat(document.getElementById('temperature').value),
+                humidity: parseFloat(document.getElementById('humidity').value),
+                moisture: parseFloat(document.getElementById('moisture').value),
+                soil_type: document.getElementById('soil_type').value,
+                crop_type: document.getElementById('crop_type').value
+            };
+
+            // Show loading, hide error and result
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('result').classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Prediction failed');
+                }
+
+                // Display results
+                document.getElementById('fertilizerName').textContent = data.predicted_fertilizer;
+                document.getElementById('confidence').textContent = `${(data.confidence * 100).toFixed(1)}%`;
+                
+                // Display probabilities
+                const probList = document.getElementById('probabilitiesList');
+                probList.innerHTML = '';
+                
+                // Sort probabilities by value
+                const sortedProbs = Object.entries(data.probabilities)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                sortedProbs.forEach(([fertilizer, prob]) => {
+                    const probItem = document.createElement('div');
+                    probItem.className = 'prob-item';
+                    probItem.innerHTML = `
+                        <span class="prob-label">${fertilizer}</span>
+                        <span class="prob-value">${(prob * 100).toFixed(1)}%</span>
+                    `;
+                    probList.appendChild(probItem);
+                });
+
+                document.getElementById('result').classList.add('show');
+                
+            } catch (error) {
+                document.getElementById('error').textContent = `Error: ${error.message}`;
+                document.getElementById('error').classList.add('show');
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+            }
+        });
+
+        function resetForm() {
+            document.getElementById('fertilizerForm').reset();
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+        }
+
+        // Load options on page load
+        loadOptions();
+    </script>
+</body>
+</html>
+
